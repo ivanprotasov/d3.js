@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<script>
+
+		var width = window.innerWidth-32,
+			height = window.innerHeight-32;
+
+		var nodes = d3.range(500).map(function() { return {radius: Math.random() * 12 + 4}; }),
+				root = nodes[0],
+				color = d3.scale.category10();
+
+				root.radius = 0;
+				root.fixed = true;
+
+
+		var svg = d3.select("body").append("svg")
+				.attr("width", width)
+				.attr("height", height);
+
+			svg.selectAll("circle")
+				.data(nodes.slice(1))
+				.enter().append("circle")
+				.attr("r", function(d) {
+					return d.radius; })
+				.style("fill", 'red')
+				.attr("cx", function(d) { return Math.random()*width; })
+				.attr("cy", function(d) { return  Math.random()*height; });
+
+
+			setTimeout(function(){
+				svg.selectAll("circle")
+						.transition().duration( function(){return  Math.random()*10000; })
+						.attr("cx", function(d) { return Math.random()*width; })
+						.attr("cy", function(d) { return  Math.random()*height; })
+						.style("fill", 'yellow')
+						.each("end", way);
+
+			},0);
+
+			function way(d,i){
+
+				var cxNew, cyNew, color;
+//				if (root.px&&root.py){
+
+				cxNew = Math.random()*width;
+				cyNew = Math.random()*height;
+
+				if (this.getAttribute('style')=='fill: rgb(255, 255, 0);'){
+					color='red'
+				}else{
+					color='yellow'
+				}
+
+//				while (intersect(root.px, root.py, 50, this.getAttribute('cx'), this.getAttribute('cy'), cxNew, cyNew)){
+//					cxNew = Math.random()*width;
+//					cyNew = Math.random()*height;
+//				}
+
+				d3.select(this).transition().duration( function(){return  Math.random()*10000; })
+						.attr("cx", cxNew)
+						.attr("cy", cyNew)
+						.style("fill", color)
+						.each("end", way);
+			}
+
+			function intersect(x, y, r, x1, y1, x2, y2) {
+				var v1 = x1 - x2;
+				var v2 = y1 - y2;
+				var s  = x1 * y2 - x2 * y1;
+				var k1 = -2 * x;
+				var k2 = -2 * y;
+				var f  = x * x + y * y - r * r;
+
+				var a  = v1 * v1 + v2 * v2;
+				var b  = v1 * v1 * k1 + 2 * s * v2 + v1 * k2 * v2;
+				var c  = f * v1 * v1 + s * s + v1 * k2 * s;
+				var D  = b * b - 4 * a * c;
+
+				if(D < 0) {
+					return 0;
+				}else {
+					return 1;
+				}
+			}
+
+
+
+//
+		svg.on("mousemove", function() {
+			var p1 = d3.mouse(this);
+			root.px = p1[0];
+			root.py = p1[1];
+
+		});
+
+
+	</script>
